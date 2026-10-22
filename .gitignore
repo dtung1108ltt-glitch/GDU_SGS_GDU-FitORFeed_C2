@@ -21,3 +21,6 @@ Thumbs.db
 # raw recordings (only the compressed demo/demo.mp4 is committed)
 *.mkv
 demo/raw*
+
+
+.tide-pack/

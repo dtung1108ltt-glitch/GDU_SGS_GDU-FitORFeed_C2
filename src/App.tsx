@@ -56,7 +56,7 @@ const INITIAL_DEMO_EXPENSE: ExpenseRequest = {
   violations: [],
 };
 
-export function App() {
+export function App({ liveAvailable = false }: { liveAvailable?: boolean }) {
   const [activeUserId, setActiveUserId] = useState<UserId>('user-a');
   const [expenses, setExpenses] = useState<ExpenseRequest[]>([INITIAL_DEMO_EXPENSE]);
   const [selectedExpenseId, setSelectedExpenseId] = useState<string>(INITIAL_DEMO_EXPENSE.id);
@@ -331,6 +331,16 @@ export function App() {
 
   return (
     <div className="min-h-screen bg-slate-950 text-slate-100 flex flex-col">
+      {/* Honesty banner: this view is the offline simulation, not a live TideCloak session */}
+      <div className="bg-amber-500/15 border-b border-amber-500/40 text-amber-200 text-xs px-4 py-1.5 text-center">
+        <b>SIMULATION MODE</b> — offline storytelling demo. Personas, keys and the 2-of-2 check are simulated in
+        your browser (WebCrypto); "enclave" labels are illustrative.{' '}
+        {liveAvailable ? (
+          <a href="/" className="underline font-semibold">Switch to LIVE TideCloak mode →</a>
+        ) : (
+          <span>Add <code>public/tidecloak.json</code> to enable LIVE TideCloak mode (see docs/SETUP.md).</span>
+        )}
+      </div>
       {/* Glassmorphic Top Header & Identity Switcher */}
       <header className="sticky top-0 z-30 border-b border-slate-800 bg-slate-900/80 bg-opacity-80 backdrop-blur-md">
         <div className="max-w-[1440px] mx-auto px-4 sm:px-6 py-3.5 flex flex-wrap items-center justify-between gap-4">

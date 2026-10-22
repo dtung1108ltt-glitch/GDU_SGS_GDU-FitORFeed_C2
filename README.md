@@ -1,45 +1,25 @@
-# Dual-Control Expense Desk (Powered by TideCloak)
+[![Built with TideCloak](https://tide.org/badges/built-with-tidecloak.svg)](https://tide.org/tidecloak?utm_source=github&utm_medium=readme&utm_campaign=unlocked)
 
-> **Cryptographically Enforced Treasury Consensus — Eliminating the "Rogue Admin" Single Point of Failure**
+## Project overview
 
-## Vision & Originality
-Corporate treasuries, startups, and DAOs face a critical vulnerability: single points of failure in expense management. Traditional Role-Based Access Control (RBAC) systems store approval states as mutable database flags that a super-administrator or compromised backend can easily bypass.
+_A treasury desk where nobody (requester, approver or sysadmin) can release a large payment alone._
 
-The **Dual-Control Expense Desk** decentralizes financial approvals so that **no single entity—not even a system administrator—holds unilateral power to release funds**. Every transaction mathematically requires **two independent, cryptographically verified approvals (`2/2`)** from distinct TideCloak identities before execution.
+Built with [TideCloak](https://tide.org/tidecloak?utm_source=github&utm_medium=readme&utm_campaign=unlocked).
 
----
+### 1. Vision & originality
+Every "four-eyes" payment control today ends in a database row the platform operator can edit. Insider fraud succeeds because one superuser can flip `approved=true` or make themselves an approver. We make dual control a property of identity, not of the app: release authority belongs to people whose logins and roles no operator can forge. Small finance teams, NGOs and startups get bank-grade separation of duties without trusting their IT admin, their SaaS vendor, or us.
 
-## The 4-Step Interactive Storytelling Prototype
+### 2. Trust constraint insight
+Today you must trust whoever runs the server: an admin can impersonate an approver, grant themselves the role, or skip the check. Remove that constraint and finance tooling can be run by an admin who has nothing to steal.
 
-The web application includes a guided 4-step storytelling bar and instant persona switching between **User A**, **User B**, and **User C**:
+### 3. Value & impact
+Example: someone with root access pushes a $48,500 "vendor" payment during a holiday. One approval leaves the funds locked. A duplicate approval, a self-approval or an admin force-release is refused. Only a second, different approver releases the payment.
 
-1. **Step 1 — Initialization (`User A: Alice Vance, Operations Lead`)**
-   - User A submits a critical vendor expense request (e.g., `$48,500 USDC` to *CloudScale Sovereign Compute Ltd.*).
-   - The canonical expense payload digest (SHA-256) is locked for threshold signing (`0/2 approvals`).
-2. **Step 2 — First Approval (`User B: Bob Sterling, Treasury Signer & SysAdmin`)**
-   - User B reviews the request and signs the first approval using their WebCrypto ECDSA P-256 key bound to their TideCloak identity (`1/2 approvals`).
-3. **Step 3 — The Constraint Check (`Malicious Double-Approve / Rogue Admin Attempt`)**
-   - User B attempts to approve the request a second time (or use `SysAdmin DB Bypass`) to force the payout through unilaterally.
-   - **TideCloak immediately blocks the action (`TIDECLOAK_ERR_DUPLICATE_IDENTITY_SHARE` / `TIDECLOAK_ERR_UNILATERAL_ADMIN_OVERRIDE_BLOCKED`)** because the signing key thumbprint and subject DID collide with Share #1.
-4. **Step 4 — Consensus (`User C: Clara Chen, CFO`)**
-   - User C logs in and provides the independent second cryptographic approval (`2/2 approvals`).
-   - TideCloak verifies both distinct ECDSA signatures over the canonical expense digest, mints the **Threshold Execution Certificate**, and releases the treasury funds.
+### 4. Why TideCloak matters
+Tide logins mean no admin holds passwords to impersonate anyone. The `expense-approver` role sits under TideCloak Quorum-Enforced Governance, so an admin who grants it only creates a change request for the quorum to approve. With ordinary RBAC, one admin can do both. Honest scope: the two-distinct-approvers check runs in our client today. The next step is a Forseti policy on Tide's ORKs.
 
----
+### 5. Prototype & storytelling
+(1) Alice submits; (2) Bob approves, 1/2; (3) Bob's re-approval and his SysAdmin force-release are both blocked; (4) Clara approves and the payment is released. LIVE mode uses `@tidecloak/react`. Without `public/tidecloak.json`, a labelled offline simulation runs. Video: [demo/demo.mp4](demo/demo.mp4).
 
-## Getting Started
-
-```bash
-# Install dependencies
-npm install
-
-# Start the development server
-npm run dev
-
-# Build for production
-npm run build
-```
-
-## Key Prototype Files
-- [`src/lib/tidecloakEngine.ts`](src/lib/tidecloakEngine.ts) — WebCrypto ECDSA P-256 key generation, canonical expense digest hashing, and TideCloak 2-of-N dual-control policy enforcement engine.
-- [`src/App.tsx`](src/App.tsx) — Interactive Dual-Control Expense Desk UI, 4-step storytelling walkthrough bar, persona switcher, cryptographic violation inspector, and live TideCloak Enclave telemetry stream.
+## Setup
+`npm install && npm run dev`. LIVE mode: [docs/SETUP.md](docs/SETUP.md).
